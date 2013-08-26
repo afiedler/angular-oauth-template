@@ -1,0 +1,4 @@
+/client/dist
+/client/docs
+node_modules
+.idea
