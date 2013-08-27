@@ -1,42 +1,6 @@
 /*jshint -W087 */ 
 describe('Authentication Service', function () {
 
-  /*var http, window, rootScope, q, CONFIG, location, timeout;
-  beforeEach(module('auth'));
-  beforeEach(function(){
-    inject(function($injector) {
-      http = $injector.get('$http');
-      window = $injector.get('$window');
-      rootScope = $injector.get('$rootScope');
-      q = $injector.get('$q');
-      CONFIG = {
-        oauth_api_client_id: 'CLIENT_ID',
-        oauth_api_endpoint: 'http://myendpoint.com/api/v1',
-        oauth_callback_url: 'http://myapp.com/oauth_callback'
-      };
-      location = $injector.get('$location');
-      timeout = $injector.get('$timeout');
-    });
-  }); 
-
-  var $httpBackend, $rootScope, createController;
- 
-   beforeEach(inject(function($injector) {
-     // Set up the mock http service responses
-     $httpBackend = $injector.get('$httpBackend');
-     // backend definition common for all tests
-     $httpBackend.when('GET', '/auth.py').respond({userId: 'userX'}, {'A-Token': 'xxx'});
- 
-     // Get hold of a scope (i.e. the root scope)
-     $rootScope = $injector.get('$rootScope');
-     // The $controller service is used to create instances of controllers
-     var $controller = $injector.get('$controller');
- 
-     createController = function() {
-       return $controller('MyController', {'$scope' : $rootScope });
-     };
-   })); */
-
   var mockWindow =
   {
     open: function(url,name,formatOptions) {
@@ -51,8 +15,7 @@ describe('Authentication Service', function () {
     location: {origin: 'dummy origin'},
     _openedUrl: null,
     _messageListener: null
-  };
-  
+  }; 
  
   beforeEach(function () {
     module('authentication');
@@ -60,24 +23,10 @@ describe('Authentication Service', function () {
   });
 
   afterEach(inject(function($injector) {
-     var $httpBackend = $injector.get('$httpBackend');
-     $httpBackend.verifyNoOutstandingExpectation();
-     $httpBackend.verifyNoOutstandingRequest();
+
   }));
 
-  //inject(function($injector) {
-    // Set up the mock http service responses
-    //$httpBackend = $injector.get('$httpBackend');
-    // backend definition common for all tests
-    //$httpBackend.when('GET', '/auth.py').respond({userId: 'userX'}, {'A-Token': 'xxx'});
 
-    // Get hold of a scope (i.e. the root scope)
-    //$rootScope = $injector.get('$rootScope');
-    // The $controller service is used to create instances of controllers
-    
-
-    
-  //}));
 
   it('should not be authenticated on creation', inject(function($injector) {
     var auth = $injector.get('auth');
@@ -144,41 +93,6 @@ describe('Authentication Service', function () {
       auth.authenticateUserAsync();
       expect(mockWindow._openedUrl).toEqual(CONFIG.oauth_api_endpoint + '/oauth/authorize?response_type=token&client_id=' +
           CONFIG.oauth_api_client_id + '&redirect_uri=' + encodeURIComponent(CONFIG.oauth_callback_url));
-    });
-  });
-
-  it('should GET token info when popup calls postMessage', function() {
-
-    module(function ($provide) {
-      $provide.value('$window', mockWindow);
-    });
-
-    inject(function($injector) {
-      var auth = $injector.get('auth');
-      var CONFIG = $injector.get('CONFIG');
-      // Set up the mock http service responses
-      var $httpBackend = $injector.get('$httpBackend');
-      $httpBackend.expect('GET',CONFIG.oauth_api_endpoint + '/oauth/token/info')
-        .respond({application: { uid: CONFIG.oauth_api_client_id}} );
-     
-
-      var authenticated = null;
-      
-      auth.authenticateUserAsync().then(function() {
-        authenticated = true;
-      },
-      function (error) {
-        authenticated = error;
-      });
-
-      expect(mockWindow._openedUrl).toEqual(CONFIG.oauth_api_endpoint + '/oauth/authorize?response_type=token&client_id=' +
-          CONFIG.oauth_api_client_id + '&redirect_uri=' + encodeURIComponent(CONFIG.oauth_callback_url));
-
-      // Now, pretend the window returns the access_token
-      angular.element(mockWindow).trigger('message', {access_token: '123456789'});
-      expect(authenticated).toEqual(true);
-      $httpBackend.flush();
-      
     });
   });
 
