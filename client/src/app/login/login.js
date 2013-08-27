@@ -23,7 +23,7 @@ angular.module('login', [])
     $scope.authenticate = function() {
       auth.authenticateUserAsync().then(
         function(ret){
-          $location.path(ret.redirectAfterLogin)
+          $location.path(ret.redirectAfterLogin);
         }, function(){
           // error!
         });

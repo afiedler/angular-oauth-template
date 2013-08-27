@@ -2,6 +2,8 @@ angular.module('authentication', [
   'configuration'
   ])
 
+.value('authState', {access_token : null})
+
 /**
  * @ngdoc object
  * @name authentication.auth
@@ -10,13 +12,9 @@ angular.module('authentication', [
  * Handles OAuth authentication
  *
  */
-.factory('auth', ['$http', '$window', '$rootScope', '$q', 'CONFIG', '$location', '$timeout',
-    function($http, $window, $rootScope, $q, CONFIG, $location, $timeout){
+.factory('auth', ['$http', '$window', '$rootScope', '$q', 'CONFIG', '$location', '$timeout', 'authState',
+    function($http, $window, $rootScope, $q, CONFIG, $location, $timeout, authState){
 
-    // Init code goes here
-    var authState = {
-      access_token: null 
-    };
 
     var redirectAfterLogin = '/';
     
@@ -33,18 +31,16 @@ angular.module('authentication', [
       }
       };
 
-    var handlePopupMessage = function(event) {
-      event = event.originalEvent; // jQuery mucks things up
-      if (event.source === popupHolder.popup && event.origin === window.location.origin) {
-        $rootScope.$apply(function() {
-          if (event.data.access_token) {
-            popupDeferred.resolve(event.data);
-          } else {
-            popupDeferred.reject(event.data);
-          }
-        });
-      }
+    var handlePopupMessage = function(event, data) {
+      $rootScope.$apply(function() {
+        if (data.access_token) {
+          popupDeferred.resolve(event.data);
+        } else {
+          popupDeferred.reject(event.data);
+        }
+      });
     };
+
     angular.element($window).bind('message', handlePopupMessage);
 
     var formatPopupOptions = function(options) {
@@ -215,7 +211,7 @@ angular.module('authentication', [
           }
         );
 
-        popupHolder.popup = window.open(
+        popupHolder.popup = $window.open(
           CONFIG.oauth_api_endpoint + '/oauth/authorize?response_type=token&client_id=' +
           CONFIG.oauth_api_client_id + '&redirect_uri=' + encodeURIComponent(CONFIG.oauth_callback_url),
           popupOptions.name, formatPopupOptions(popupOptions.openParams));

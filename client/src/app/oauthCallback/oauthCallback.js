@@ -21,7 +21,7 @@ angular.module('oauthCallback', [])
  * server has redirected the user to the callback. The opener window should be listening for
  * message events from this controller's window. 
  */
-.controller('OauthCallbackCtrl', ['$scope', '$location',
+.controller('OauthCallbackCtrl', ['$scope', '$location', '$window',
   function ($scope, $location) {
     
     /*
@@ -49,7 +49,7 @@ angular.module('oauthCallback', [])
     //       the token if it manages to change the location of the parent. (See:
     //       https://developer.mozilla.org/en/docs/DOM/window.postMessage#Security_concerns)
 
-    window.opener.postMessage(params, "*");
-    window.close();
+    $window.opener.postMessage(params, "*");
+    $window.close();
 
 }]);
